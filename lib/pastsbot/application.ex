@@ -3,11 +3,12 @@ defmodule Pastsbot.Application do
 
   def start(_type, _args) do
     children = [
-      {Finch, name: FinchClient},
-      {Pastsbot.WSClient, name: WSC}
+      {Pastsbot.WSClient, name: WS},
+      {Pastsbot.Paste, name: Paste}
     ]
+
 
     opts = [strategy: :one_for_one, name: Pastsbot.Supervisor]
     Supervisor.start_link(children, opts)
   end
- end
+end

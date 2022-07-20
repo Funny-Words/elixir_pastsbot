@@ -1,35 +1,65 @@
 defmodule Pastsbot.Commands do
-  alias Pastsbot.PasteAgent
+  alias Pastsbot.Paste
   alias Pastsbot.Storage
 
   @api "https://discord.com/api/v10"
 
-  def handle_commands([channel_id, id], [cmd, name, paste], state) do
-    pastes = state[:pastes]
+  def handle_commands([channel_id, id], [cmd, name, paste]) do
     cond do
       cmd == "a" ->
-        PasteAgent.add(pastes, %{"name" => name, "content" => paste})
+        Paste.add(name, paste)
         edit_message("paste added", [channel_id, id])
+
       cmd == "g" ->
-        PasteAgent.get(pastes, name)
+        Paste.get(name)
         |> edit_message([channel_id, id])
+
       cmd == "r" ->
-        PasteAgent.remove(pastes, name)
+        Paste.remove(name)
         edit_message("paste removed", [channel_id, id])
+
       cmd == "u" ->
-        PasteAgent.update(pastes, %{"name" => name, "content" => paste})
+        Paste.update(name, paste)
         edit_message("paste updated", [channel_id, id])
+
       cmd == "s" ->
-        Storage.write(pastes)
+        Storage.write()
         edit_message("pastes saved", [channel_id, id])
+
+      cmd == "ga" ->
+        edit_message(
+          Paste.get_all_names() |> Enum.join(", "),
+          [channel_id, id]
+        )
+
+      cmd == "h" ->
+        """
+        ```
+        a [name] [paste] - add paste
+        g [name] - get paste by name
+        r [name] - remove paste
+        u [name] [paste] - update paste
+        s - force-save pastes
+        ga - get all the paste names
+        h - this help message
+        ```
+        """
+        |> edit_message([channel_id, id])
+
+      true ->
+        edit_message("invalid command", [channel_id, id])
     end
+
+    {:ok, %{}}
   end
 
   defp edit_message(data, [channel_id, id]) do
-    Finch.build(
-      :patch,
+    headers = [Authorization: "#{System.get_env("TOKEN")}", "Content-Type": "application/json"]
+
+    HTTPoison.patch(
       "#{@api}/channels/#{channel_id}/messages/#{id}",
-      {:stream, [data]}
-    ) |> Finch.request(FinchClient)
+      Jason.encode!(%{"content" => data}),
+      headers
+    )
   end
 end

@@ -1,21 +1,43 @@
 # Pastsbot
 
-**TODO: Add description**
+A simple selfbot written in elixir and created for trolling using [pastes](https://copypastatext.com/)
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `pastsbot` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:pastsbot, "~> 0.1.0"}
-  ]
-end
+```sh
+git clone https://github.com/uebernihilist/elixir_pastsbot && cd elixir_pastsbot
+mix compile
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/pastsbot>.
+## Usage
 
+After installation you need to create the following ENV variables:
+
+``` text
+TOKEN=your_token
+ID=your_id
+PREFIX=your_prefix
+```
+
+> PREFIX and ID are optional.
+> The default prefix is $
+
+To run, type
+
+``` sh
+iex -S mix
+```
+
+PROFIT!
+
+### Commands
+
+a [name] [paste] - add paste
+g [name] - get paste by name
+r [name] - remove paste
+u [name] [paste] - update paste
+s - force-save pastes
+ga - get all the paste names
+h - this help message
+ 
+> Don't forget to insert the prefix before the command

@@ -1,22 +1,25 @@
 defmodule Pastsbot.Storage do
-  alias Pastsbot.PasteAgent
-
-  # Path attribute
   @path System.get_env("JSON_PATH", "./pastes.json")
 
-  # Sets an agent with the read value
-  # Returns an Agent pid
   def read do
-    @path
-    |> File.read!()
+    try do
+      @path |> File.read!()
+    rescue
+      true ->
+        new()
+        read()
+    end
     |> Jason.decode!()
-    |> PasteAgent.new()
   end
 
-  def write(pid) do
+  def write do
     File.write(
       @path,
-      PasteAgent.get_all(pid) |> Jason.encode!()
+      Pastsbot.Paste.get_all() |> Jason.encode!()
     )
+  end
+
+  def new do
+    File.write(@path, "{\"ping\": \"pong\"}")
   end
 end

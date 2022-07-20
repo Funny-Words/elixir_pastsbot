@@ -3,22 +3,24 @@ defmodule Pastsbot.WSClient.Payload do
 
   def opcode(op) do
     %{
-      :dispatch        => 0,
-      :heartbeat       => 1,
-      :identify        => 2,
-      :resume          => 6,
-      :reconnect       => 7,
+      :dispatch => 0,
+      :heartbeat => 1,
+      :identify => 2,
+      :resume => 6,
+      :reconnect => 7,
       :invalid_session => 9,
-      :hello           => 10
+      :hello => 10,
+      :ack => 11
     }[op]
   end
 
-  defp build_payload(op, data \\ %{}, s \\ nil, t \\ nil) do
+  defp build_payload(op, data, s \\ nil, t \\ nil) do
     %{op: opcode(op), d: data, s: s, t: t} |> Jason.encode!()
   end
 
   def properties do
-    {_, osname} = :os.type
+    {_, osname} = :os.type()
+
     %{
       "$os" => osname,
       "$browser" => "furryfox"
@@ -36,6 +38,6 @@ defmodule Pastsbot.WSClient.Payload do
   end
 
   def heartbeat do
-    build_payload(:heartbeat)
+    build_payload(:heartbeat, nil)
   end
 end
