@@ -32,6 +32,8 @@ PROFIT!
 
 ### Commands
 
+``` text
+
 a [name] [paste] - add paste
 g [name] - get paste by name
 r [name] - remove paste
@@ -39,5 +41,7 @@ u [name] [paste] - update paste
 s - force-save pastes
 ga - get all the paste names
 h - this help message
- 
+
+```
+
 > Don't forget to insert the prefix before the command
