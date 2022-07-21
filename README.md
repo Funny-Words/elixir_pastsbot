@@ -25,8 +25,10 @@ PREFIX=your_prefix
 To run, type
 
 ``` sh
-iex -S mix
+MIX_ENV=prod iex -S mix
 ```
+
+> If you want to receive debug logs, use MIX_ENV=dev instead
 
 PROFIT!
 

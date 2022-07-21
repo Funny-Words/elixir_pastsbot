@@ -7,8 +7,8 @@ defmodule Pastsbot.WSClient do
   @heartbeat_interval 41250
   @websocket_server "wss://gateway.discord.gg/?v=10&encoding=json"
 
-  def start_link(_opts) do
-    WebSockex.start_link(@websocket_server, __MODULE__, %{}, name: Pastsbot.WS)
+  def start_link(opts) do
+    WebSockex.start_link(@websocket_server, __MODULE__, %{}, opts)
   end
 
   # -------------- GENSERVER CALLBACKS -------------------
@@ -25,7 +25,6 @@ defmodule Pastsbot.WSClient do
   end
 
   def handle_frame({:text, frame}, state) do
-    Logger.debug("Frame received #{frame}")
     payload = Jason.decode!(frame)
     op = payload["op"]
 
@@ -37,7 +36,7 @@ defmodule Pastsbot.WSClient do
         handle_dispatch(payload, state)
 
       op == Payload.opcode(:invalid_session) ->
-        Logger.warning("Invalid session")
+        Logger.warning("Invalid session. Did you set the token env variable?")
         Process.sleep(2000)
         {:reply, send_identify(), state}
 
@@ -46,7 +45,7 @@ defmodule Pastsbot.WSClient do
         {:ok, state}
 
       true ->
-        Logger.debug("Unknon frame: #{op}")
+        Logger.debug("Unknown frame: #{op}")
         {:ok, state}
     end
   end
@@ -58,7 +57,7 @@ defmodule Pastsbot.WSClient do
   end
 
   def handle_info(:heartbeat, state) do
-    WebSockex.cast(Pastsbot.WS, {:heartbeat})
+    WebSockex.cast(WS, {:heartbeat})
     Process.send_after(self(), :heartbeat, @heartbeat_interval)
     {:ok, state}
   end
@@ -69,7 +68,7 @@ defmodule Pastsbot.WSClient do
   end
 
   def terminate(reason, state) do
-    Logger.warning("Connection was terminated with the reason: #{inspect(reason)}")
+    Logger.critical("Connection was terminated with the reason: #{inspect(reason)}")
     Storage.write()
     {:ok, state}
   end
