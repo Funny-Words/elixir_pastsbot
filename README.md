@@ -40,7 +40,7 @@ g [name] - get paste by name
 r [name] - remove paste
 u [name] [paste] - update paste
 s - force-save pastes
-ga - get all the paste names
+ga - get all the pastes names
 h - this help message
 ```
 
